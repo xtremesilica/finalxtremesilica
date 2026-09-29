@@ -9,9 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style id="home-blocker-table-style">
 #page-home.active>.wrap{display:block!important}
-#page-home .wrap>:not(.blockers-hero){display:none!important}
-#page-home .blockers-hero{margin-bottom:0}
-#page-home .blockers-table .col-blocker{text-align:left}
+#page-home .wrap>:not(.blockers-hero){display:none!important}#page-home .blockers-hero{margin-bottom:0}
+#page-home .blockers-objective{display:none!important}
+#page-home .blockers-table thead th:nth-child(2),
+#page-home .blockers-table tbody td:nth-child(2){text-align:left!important}
 </style>
 <script id="home-task-blockers">
 window.addEventListener('DOMContentLoaded',()=>{
