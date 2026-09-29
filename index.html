@@ -6,8 +6,52 @@
 <title>Xtremesilica — Executive Dashboard · FY27 → FY30</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style id="home-blocker-table-style">
+#page-home.active>.wrap{display:block!important}
+#page-home .wrap>:not(.blockers-hero){display:none!important}
+#page-home .blockers-hero{margin-bottom:0}
+#page-home .blockers-table .col-blocker{text-align:left}
+</style>
+<script id="home-task-blockers">
+window.addEventListener('DOMContentLoaded',()=>{
+ const ENDPOINT='https://automation.sionsemi.com/webhook/dashboard/projects';
+ const val=(o,keys,f='')=>{for(const k of keys){if(o&&o[k]!==undefined&&o[k]!==null)return o[k]}return f};
+ const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+ const tasks=payload=>{
+  const root=Array.isArray(payload)?payload:(payload.projects||payload.tasks||payload.data||[]),out=[];
+  root.forEach(item=>{
+   const nested=val(item,['tasks','project_tasks','assigned_tasks'],null),list=Array.isArray(nested)?nested:[item];
+   list.forEach(task=>{
+    const x={...item,...task},progress=Math.max(0,Math.min(100,Number(val(x,['progress_percentage','Progress_Percentage','progress','completion_percentage'],0))||0));
+    const raw=val(x,['blocked','Blocked'],0),status=String(val(x,['task_status','status','Status'],progress>=100?'Completed':'Assigned'));
+    const blocked=raw===true||Number(raw)===1||status.toLowerCase()==='blocked';
+    if(blocked)out.push({
+     taskId:val(x,['task_id','Task_ID','id']),taskTitle:val(x,['task_title','Task_Title','title'],'Untitled task'),projectName:val(x,['project_name','Project_Name'],'—'),
+     employeeId:String(val(x,['employee_id','Employee_ID'],'')),employeeName:val(x,['employee_name','Employee_Name','name'],'Unknown employee'),managerName:val(x,['manager_name','Manager_Name'],'—'),
+     progress,status:'Blocked',blockerName:val(x,['blocker_type','blocker_name','Blocker_Name'],'Blocker reported'),blockerDescription:val(x,['blocker_description','Blocker_Description','existing_blocker'],'')
+    });
+   });
+  });
+  return out;
+ };
+ const render=payload=>{
+  const rows=tasks(payload),body=document.getElementById('blockersBody'); if(!body)return;
+  const labels=['#','BLOCKER DETAILS','PROJECT / TASK','EMPLOYEE','MANAGER','PROGRESS','STATUS'];
+  document.querySelectorAll('#page-home .blockers-table thead th').forEach((th,i)=>th.textContent=labels[i]||'');
+  const title=document.querySelector('#page-home .blockers-topbar .title'); if(title)title.textContent='Assigned Task Blockers — Action Required';
+  const pill=document.querySelector('#page-home .count-pill'); if(pill)pill.textContent=rows.length+' OPEN';
+  const sub=document.querySelector('#page-home .blockers-topbar .sub'); if(sub)sub.textContent=rows.length?rows.length+' blocked assigned task'+(rows.length===1?'':'s')+' requiring attention':'No active blockers in assigned tasks';
+  body.innerHTML=rows.length?rows.map((t,i)=>{
+   const details=t.blockerDescription&&t.blockerDescription!==t.blockerName?'<span class="muted-line">'+esc(t.blockerDescription)+'</span>':'';
+   return '<tr><td class="col-id" data-lbl="#">B'+(i+1)+'</td><td class="col-blocker" data-lbl="Blocker">'+esc(t.blockerName)+details+'</td><td data-lbl="Project / Task"><strong>'+esc(t.projectName)+'</strong><span class="muted-line">'+esc(t.taskTitle)+'</span></td><td class="col-owner" data-lbl="Employee">'+esc(t.employeeName)+'<span class="muted-line">ID: '+esc(t.employeeId||'—')+'</span></td><td class="col-owner" data-lbl="Manager">'+esc(t.managerName)+'</td><td class="col-target" data-lbl="Progress"><strong>'+t.progress+'%</strong><div class="mini-track"><div class="mini-fill" style="width:'+t.progress+'%"></div></div></td><td class="col-status" data-lbl="Status"><span class="status-pill">'+esc(t.status)+'</span></td></tr>';
+  }).join(''):'<tr><td colspan="7" style="padding:24px;text-align:center;color:#0E7A4F;font-family:IBM Plex Mono,monospace;font-size:12px">No assigned tasks are currently blocked.</td></tr>';
+ };
+ const load=()=>fetch(ENDPOINT,{headers:{Accept:'application/json'}}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(render).catch(e=>{const b=document.getElementById('blockersBody');if(b)b.innerHTML='<tr><td colspan="7" style="padding:24px;text-align:center;color:#B91C1C">Unable to load blocker details: '+esc(e.message)+'</td></tr>'});
+ window.addEventListener('dashboard:projects-refreshed',e=>render(e.detail.projects||[]));
+ load();});
+</script>
+
 <style>
 :root{
   --ink:#0E1726; --ink2:#44506A; --ink3:#8A94A8;
