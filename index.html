@@ -803,6 +803,7 @@ tfoot td{font-weight:600; background:var(--grid); border-top:1px solid var(--lin
     <div class="pagenav">
       <a href="#home" class="pg-link" data-page="home">Home</a>
       <a href="#marketing" class="pg-link" data-page="marketing">Marketing</a>
+      <a href="#finance" class="pg-link" data-page="finance">Finance</a>
       <button id="openAssignment" class="assignment-nav" type="button">Assign Project</button>
       <a href="#task-progress" class="pg-link" data-page="task-progress">Task Progress</a>
     </div>
@@ -1173,6 +1174,21 @@ tfoot td{font-weight:600; background:var(--grid); border-top:1px solid var(--lin
 </div>
 </div><!-- /page-marketing -->
 
+<!-- ==================== FINANCE PAGE ==================== -->
+<div class="page" id="page-finance">
+<div class="wrap">
+  <div style="margin-bottom:22px">
+    <span class="pill pill-red">FINANCE</span>
+    <h1 style="margin-top:10px">Finance Overview</h1>
+    <p style="max-width:900px;color:var(--ink2);font-size:14px;margin-top:10px">Financial planning, revenue, expenses and cash-flow reporting will be available in this section.</p>
+  </div>
+  <div class="card">
+    <h3>Finance dashboard</h3>
+    <p class="sub" style="margin-top:8px">Finance metrics and reports can be connected here without changing the existing assignment and task-progress functions.</p>
+  </div>
+</div>
+</div><!-- /page-finance -->
+
 <!-- ==================== RISKS PAGE ==================== -->
 <div class="page" id="page-risks">
 <div class="wrap">
@@ -1529,10 +1545,11 @@ const commonScales = () => ({
 const commonLegend = () => ({ labels:{ color:C.ink2, font:{family:"'IBM Plex Mono',monospace", size:11}, boxWidth:10, boxHeight:10, padding:14 } });
 
 // ================== ROUTER ==================
-const pages = ["home","marketing","task-progress"];
+const pages = ["home","marketing","finance","task-progress"];
 const SUBS = {
   home:"Project Assignment & Task Tracking",
   marketing:"Marketing & Lead-Generation Plan",
+  finance:"Financial Planning & Reporting",
   "task-progress":"Assigned Task Progress & Blocker Tracking"
 };
 function showPage(id){
