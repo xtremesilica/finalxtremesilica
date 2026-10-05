@@ -42,7 +42,7 @@
       },{period:'All Months',content:{postersGenerated:0,postersPosted:0,blogs:0,newsletters:0,videos:0,scheduled:0},totals:{impressions:0,clicks:0,leads:0,spend:0,engagement:0}});
       summary.totals.engagement=data.summaries.length?summary.totals.engagement/data.summaries.length:0;
       const grouped=new Map();
-      data.campaigns.forEach(c=>{const key=`${c.platform}|${c.name}`;const x=grouped.get(key)||{...c,period:'All Months',spend:0,impressions:0,clicks:0,leads:0};x.spend+=Number(c.spend||0);x.impressions+=Number(c.impressions||0);x.clicks+=Number(c.clicks||0);x.leads+=Number(c.leads||0);grouped.set(key,x)});
+      data.campaigns.forEach(c=>{const key=`${c.platform}|${c.name}`;const x=grouped.get(key)||{...c,period:'All Months',spend:0,impressions:0,clicks:0,leads:0};x.status=c.status;x.spend+=Number(c.spend||0);x.impressions+=Number(c.impressions||0);x.clicks+=Number(c.clicks||0);x.leads+=Number(c.leads||0);grouped.set(key,x)});
       const weekMap=new Map();
       data.weekly.forEach(w=>{const x=weekMap.get(w.label)||{period:'All Months',label:w.label,google:0,meta:0,organic:0};x.google+=Number(w.google||0);x.meta+=Number(w.meta||0);x.organic+=Number(w.organic||0);weekMap.set(w.label,x)});
       return{summary,campaigns:[...grouped.values()],weekly:[...weekMap.values()]};
